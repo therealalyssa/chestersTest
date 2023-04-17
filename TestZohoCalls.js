@@ -18,21 +18,6 @@ async function Execute()
     const appLink = "construction-mini";
     //const reportLink = "Contact";
     const reportLink = "Pricebook";
-    // const Name = {
-    //     "display_value":"Test Name",
-    //     "prefix": "",
-    //     "last_name": "Test",
-    //     "suffix": "",
-    //     "first_name": "Name"
-    // };
-
-    // const Name =
-    // [{
-    //     Name: {
-    //         last_name: "Appleee",
-    //         first_name: "Timeee"
-    //     }
-    // }];
     // const test = [{
     //     Product_ID:"#12",
     //     Product_Description:"Microlene  Water Filter Tap Adaptor for Greens/Dorf/Amercian Standard Chrome",
@@ -46,7 +31,7 @@ async function Execute()
     //console.log(Name);
     //const recs = await Zoho.createRecords (appLink, reportLink, test);
     //console.log("records? ", recs);
-    let count = 1;
+    //let count = 1;
     let send = [];
     //Arrays start from zero
     let Total = 0;
@@ -64,20 +49,25 @@ async function Execute()
         send.push(item);
         //It has now reached 200 items, reset the count, send the data, and clear the array.
         //It also checks to see if it is the last data in the input (output.json), so send it anyway.
-        if(count === 200 || parseInt(product) + 1 === data.length)
-        {
-            count = 1;
-            //***WARNING! This function will always create new records, not update existing ones.***//
-            const recs = await Zoho.createRecords (appLink, reportLink, send);
-            console.log(recs);
-            //This will set the length of the send array to zero, removing data. This is because we can only send 200 records at a time, so we need to clear the old records.
-            send.length = 0;
-        }
-        else
-        {
-            count++;
-        }
+        // if(count === 200 || parseInt(product) + 1 === data.length)
+        // {
+        //     count = 1;
+        //     //***WARNING! This function will always create new records, not update existing ones.***//
+        //     const recs = await Zoho.createRecords (appLink, reportLink, send);
+        //     console.log(recs);
+        //     //This will set the length of the send array to zero, removing data. This is because we can only send 200 records at a time, so we need to clear the old records.
+        //     send.length = 0;
+        // }
+        // else
+        // {
+        //     count++;
+        // }
     }
+    //Shivneel Rattan 17-4-2023 according to AJ, the data should paginate automatically when you import it, so doing it manually is not necessary.
+    //console.log(send);
+    //console.log(send.length);
+    const recs = await Zoho.createRecords (appLink, reportLink, send);
+    console.log(recs);
     //console.log("Total Iterations Complete: "+ Total+". Total length of input data: " +data.length);
     //console.log("Loop execution complete.");
 }

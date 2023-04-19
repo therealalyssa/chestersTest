@@ -28,6 +28,8 @@ const Zoho = {
     getRecords: async function(appLink, reportLink, options, retry = 4) {
         const url = !options ? `${process.env.DEV_URL}/api/${appLink}/${reportLink}` : `${process.env.DEV_URL}/api/${appLink}/${reportLink}/${encodeURIComponent(JSON.stringify(options))}`;
         const method = "GET";
+        //SR
+        console.log("This is the URL: "+url);
         const timeStamp = moment().tz("Pacific/Auckland").format("x");
         const headers = {
             Authorization: `Bearer ${calculateSignature(method, url, process.env.SECRET, process.env.OWNER, process.env.TOKEN, timeStamp)}`,

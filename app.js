@@ -1,6 +1,4 @@
-
-
-
+require("dotenv").config();
 const express = require('express');
 const multer = require("multer");
 const moment = require("moment-timezone");
@@ -10,26 +8,24 @@ const app = express();
 const UTIL = require("util");
 const fs = require("fs");
 const csvtojson = require('csvtojson');
-const Zoho  = require('./zohospec.js')
+const Zoho  = require('./zohospec.js');
+
+//const options = false;
 
 
 app.use(bodyParser.json());
 require("dotenv").config();
-let testvar2 = "Chesters Data will display here";
+let testvar2 = "Chesters Data will display here2";
 
 app.use(express.json({ limit: "80mb"}));
 app.use(express.urlencoded({ extended: true }));
 
-app.get ('/chestersData', (req, res) => {
-    res.send(testvar2);
-    Zoho.getAllRecords (appLink, reportLink, options)
-    .then((records) => {
-      console.log(records);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-})
+app.get ('/chestersData2', async (req, res) => {
+    console.log(appLink+reportLink);
+    //let test3 = "This is a test string.";
+    //res.send(test3);
+
+});
 
 
 app.post('/chestersData', multer({

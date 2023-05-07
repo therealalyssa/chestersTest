@@ -1,7 +1,7 @@
 const Zoho = require("./zohospec");
 //Shivneel Rattan 14-4-2023 You may need to flip the slash. This is because Linux and OS X (Unix based systems) treat this differently.
 //Shivneel Rattan 14-4-2023 output.json has 24540 records (data.length)
-const data = require("./output.json");
+const data = require("./output2.json");
 //Run this file using://Shivneel Rattan 14-4-2023 You may need to flip the slash. This is because Linux and OS X (Unix based systems) treat this differently.
 // node .\TestZohoCalls.js
 async function Execute()
@@ -38,15 +38,25 @@ async function Execute()
     for(const product in data)
     {
         Total++;
+        //const Markup= Price-Cost/Cost  * 100;
+        //const Margin= Price-Cost/Price * 100;
+        //Calculate the markup and margin percentages
+        let markupValue= (((data[product]["Decimal 2"] - data[product]["Decimal 1"])/ data[product]["Decimal 1"])*100).toFixed(2);
+        let marginValue = (((data[product]["Decimal 2"] - data[product]["Decimal 1"]) / data[product]["Decimal 2"]) * 100).toFixed(2);
         //We need to convert the output.json because the labels on the data have spaces, something which zoho creator does not like.
         let item ={
-            Product_ID: data[product]["Product ID"],
-            Product_Description: data[product]["Product Description"],
+            SKU: data[product]["Product ID"],
+            Description: data[product]["Product Description"],
             Unit: data[product]["Unit"],
-            Decimal_1: data[product]["Decimal 1"],
-            Decimal_2: data[product]["Decimal 2"]
+            Cost: data[product]["Decimal 1"], //cost
+            Price: data[product]["Decimal 2"], //price
+            Margin:marginValue,
+            Mark_Up:markupValue, 
+            
         };
         send.push(item);
+        //console.log("Markup: " + markupValue);
+        //console.log("Margin: " + marginValue);
         //It has now reached 200 items, reset the count, send the data, and clear the array.
         //It also checks to see if it is the last data in the input (output.json), so send it anyway.
         // if(count === 200 || parseInt(product) + 1 === data.length)
@@ -67,7 +77,7 @@ async function Execute()
     //console.log(send);
     //console.log(send.length);
     const recs = await Zoho.createRecords (appLink, reportLink, send);
-    console.log(recs);
+    //console.log(recs);
     //console.log("Total Iterations Complete: "+ Total+". Total length of input data: " +data.length);
     //console.log("Loop execution complete.");
 }

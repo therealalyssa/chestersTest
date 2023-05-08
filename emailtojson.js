@@ -24,7 +24,7 @@ const SearchStr3 = "Content-Transfer-Encoding: base64";
 const SearchStr4 = "\n--";
 
 //Change this variable to get data from a specific page.
-let getPage = 0;
+let getPage = 1;
 
 let CSVData = Base64Str.split(SearchStr1).length > 1 ? Base64Str.split(SearchStr1)[1] : Base64Str.split(SearchStr1)[0];
 
@@ -95,6 +95,8 @@ for (i = itemLimit * getPage; i < splitcsv.length; ++i)
     
     //Set the length to zero because we need to clear the array for more data.
     pagedata.length = 0;
+    //We can use the variable i to stop execution of the loop. We can do this by setting it to the size of the splitcsv, and this will mean once it creates a page, it will no longer run.
+    i = splitcsv.length;
   }
 }
 }

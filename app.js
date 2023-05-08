@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { PageCount } = require('./pagecount.js');
 const express = require('express');
 const multer = require("multer");
 const moment = require("moment-timezone");
@@ -20,11 +21,15 @@ let testvar2 = "Chesters Data will display here2";
 app.use(express.json({ limit: "80mb"}));
 app.use(express.urlencoded({ extended: true }));
 
-app.get ('/chestersData2', async (req, res) => {
-    console.log(appLink+reportLink);
-    //let test3 = "This is a test string.";
-    //res.send(test3);
 
+app.get('/chestersData2', async (req, res) => {
+    try {
+      const pageCount = await PageCount();
+      res.json({ pageCount, message: 'Success!' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'There was an error parsing data' });
+    }
 });
 
 

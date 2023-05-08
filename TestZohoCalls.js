@@ -2,8 +2,12 @@ const Zoho = require("./zohospec");
 //Shivneel Rattan 14-4-2023 You may need to flip the slash. This is because Linux and OS X (Unix based systems) treat this differently.
 //Shivneel Rattan 14-4-2023 output.json has 24540 records (data.length)
 const data = require("./output2.json");
+//const emaildata = require("./response.txt");
 //Run this file using://Shivneel Rattan 14-4-2023 You may need to flip the slash. This is because Linux and OS X (Unix based systems) treat this differently.
 // node .\TestZohoCalls.js
+const UTIL = require("util");
+const fs = require("fs");
+const ReadFile=UTIL.promisify(fs.readFile);
 async function Execute()
 {
     // require("dotenv").config({ path: "./.env" })
@@ -76,10 +80,62 @@ async function Execute()
     //Shivneel Rattan 17-4-2023 according to AJ, the data should paginate automatically when you import it, so doing it manually is not necessary.
     //console.log(send);
     //console.log(send.length);
-    const recs = await Zoho.createRecords (appLink, reportLink, send);
+    // const recs = await Zoho.createRecords (appLink, reportLink, send);
     //console.log(recs);
     //console.log("Total Iterations Complete: "+ Total+". Total length of input data: " +data.length);
     //console.log("Loop execution complete.");
+    //ExampleParse();
+}
+// async function Testexecute()
+// {
+//     console.log("Test");
+//     //console.log(emaildata);
+// }
+// Testexecute();
+//Execute();
+//let email = require("./response.txt")
+
+//var fs = require('fs');
+
+require.extensions['.txt'] = function (module, filename) {
+    module.exports = fs.readFileSync(filename, 'utf8');
+};
+
+let email = require("./response.txt");
+async function ExampleParse()
+{
+  //let Base64Str = await ReadFile("./response.txt");
+  let Base64Str = email;//await ReadFile("./response.txt");
+
+
+  const SearchStr1 = 'filename="Chesters_CSV';
+
+  const SearchStr2 = ".csv";
+
+  const SearchStr3 = "Content-Transfer-Encoding: base64";
+
+  const SearchStr4 = "\n--";
+
+  let CSVData =
+    Base64Str.split(SearchStr1).length > 1
+      ? Base64Str.split(SearchStr1)[1]
+      : Base64Str.split(SearchStr1)[0];
+
+  let FileName =
+    SearchStr1.split('filename="')[1] + CSVData.split(SearchStr2)[0] + ".csv";
+
+  CSVData =
+    CSVData.split(SearchStr3).length > 1
+      ? CSVData.split(SearchStr3)[1]
+      : CSVData.split(SearchStr3)[0];
+
+  console.log("CSVData length", CSVData.length);
+
+  CSVData = CSVData.split(SearchStr4)[0].trim();
+
+  console.log("FileName =", FileName);
+
+  console.log("CSV Data =", Buffer.from(CSVData, "base64").toString("utf-8"));
 }
 
-Execute();
+ExampleParse();

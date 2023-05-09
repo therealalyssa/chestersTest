@@ -53,13 +53,27 @@ let count = itemLimit * getPage;
 let page = getPage;
 let pagedata;
 let senddata =[];
+let recordcount = 0;
 for (i = itemLimit * getPage; i < splitcsv.length; ++i)
 {
+    ++recordcount;
   //thiscsv should be 5 separate values, we will need to map these.
   thiscsv = splitcsv[i].split(",");
-  //thiscsv[3] is decimal 1, thiscsv[4] is decimal 2 
-  let markupValue = (((thiscsv[4] - thiscsv[3])/ thiscsv[3])*100).toFixed(2);
-  let marginValue = (((thiscsv[4] - thiscsv[3]) / thiscsv[4]) * 100).toFixed(2);
+  //thiscsv[3] is decimal 1, thiscsv[4] is decimal 2
+    //Shivneel Rattan 10-5-2023 to counteract the divide by zero bug
+    //let markupValue = (((thiscsv[4] - thiscsv[3])/ thiscsv[3])*100).toFixed(2);
+    //let marginValue = (((thiscsv[4] - thiscsv[3]) / thiscsv[4]) * 100).toFixed(2);
+    let markupValue = 0;
+    let marginValue = 0;
+    if(thiscsv[3] != 0)
+    {
+        markupValue = (((thiscsv[4] - thiscsv[3])/ thiscsv[3])*100).toFixed(2);
+    }
+    if(thiscsv[4] != 0)
+    {
+        marginValue = (((thiscsv[4] - thiscsv[3]) / thiscsv[4]) * 100).toFixed(2);
+    }
+
   //We need to convert the output.json because the labels on the data have spaces, something which zoho creator does not like.
   let item = {
       SKU: thiscsv[0],
@@ -77,6 +91,7 @@ for (i = itemLimit * getPage; i < splitcsv.length; ++i)
     if (senddata.length >= itemLimit || (i == splitcsv.length - 1))
     {
         let info = {
+            recordCount: recordcount,
             pageNo: page,
             AdditionalData: true,
             //AccountNo: FileAccountNo,
@@ -106,7 +121,8 @@ for (i = itemLimit * getPage; i < splitcsv.length; ++i)
 }
 console.log("Account Number: " + AccountNo);
 console.log("Page: " + Page);
-console.log("Pagedata: " + JSON.stringify(pagedata));
+//console.log("Pagedata: " + JSON.stringify(pagedata));
+console.log("Record Count: " + recordcount);
 return pagedata;
 }
 

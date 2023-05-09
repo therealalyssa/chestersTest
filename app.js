@@ -1,5 +1,6 @@
 require("dotenv").config();
 const { PageCount } = require('./pagecount.js');
+const { ExampleParse } = require('./emailtojson.js');
 const express = require('express');
 const multer = require("multer");
 const moment = require("moment-timezone");
@@ -21,16 +22,58 @@ let testvar2 = "Chesters Data will display here2";
 app.use(express.json({ limit: "80mb"}));
 app.use(express.urlencoded({ extended: true }));
 
-
-app.get('/chestersData2', async (req, res) => {
+//This will need to have the pricebook / account number in order to get the pricebook to work.
+app.get('/pricebook/getPageCount', async (req, res) => {
     try {
-      const pageCount = await PageCount();
-      res.json({ pageCount, message: 'Success!' });
+        let pageCount;
+       //let AccountNo = req.get('accountno');
+       let AccountNo = req.query.AccountNo;
+       if(AccountNo !== undefined)
+       {
+        //Send the request.
+        pageCount = await PageCount();
+        res.json({ pageCount, message: 'Success! There are '+pageCount +' pages. The account number is: '+AccountNo });
+       }
+       else
+       {
+        //Not really necessary, just used for the error. We could throw some info instead.
+        res.status(500).json({error: 'No Account Number provided.'});
+       }
+      
     } catch (error) {
       console.error(error);
+       console.log(req);
       res.status(500).json({ error: 'There was an error parsing data' });
+      console.log('There was an error parsing data');
     }
 });
+
+//This will need to have the account number / pricebook number, as well as the required page.
+app.get('/pricebook/getPage', async (req, res) => {
+    try {
+       AccountNo = req.query.AccountNo;
+       Page = req.query.Page;
+       let jsonData;
+       if(AccountNo !== undefined && Page !== undefined)
+       {
+        //Send the request.
+        jsonData = await ExampleParse(AccountNo, Page);
+        res.json(jsonData);
+       }
+       else
+       {
+        //Not really necessary, just used for the error. We could throw some info instead.
+        res.status(500).json({error: 'No Account Number or Page Provided.'});
+       }
+       //res.json({ jsonData, message: 'Success!' });
+    } catch (error) {
+      console.error(error);
+       //console.log(req);
+      res.status(500).json({ error: 'There was an error parsing data' });
+      console.log('There was an error parsing data');
+    }
+});
+
 
 
 app.post('/chestersData', multer({

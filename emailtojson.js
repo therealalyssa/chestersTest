@@ -10,7 +10,7 @@ require.extensions['.txt'] = function (module, filename) {
 
 let email = require("./response.txt");
 const { json } = require("express");
-async function ExampleParse()
+async function ExampleParse(AccountNo, Page)
 {
 //let Base64Str = await ReadFile("./response.txt");
 let Base64Str = email;//await ReadFile("./response.txt");
@@ -24,7 +24,8 @@ const SearchStr3 = "Content-Transfer-Encoding: base64";
 const SearchStr4 = "\n--";
 
 //Change this variable to get data from a specific page.
-let getPage = 1;
+//let getPage = 1;
+let getPage = Page;
 
 let CSVData = Base64Str.split(SearchStr1).length > 1 ? Base64Str.split(SearchStr1)[1] : Base64Str.split(SearchStr1)[0];
 
@@ -32,7 +33,7 @@ let FileName = SearchStr1.split('filename="')[1] + CSVData.split(SearchStr2)[0] 
 let FileAccountNo = CSVData.split(SearchStr2)[0] + ".csv";
 FileAccountNo = FileAccountNo.split("#")[1];
 FileAccountNo = FileAccountNo.split(".csv")[0];
-console.log(FileAccountNo);
+console.log("File Account No: "+FileAccountNo);
 
 CSVData = CSVData.split(SearchStr3).length > 1 ? CSVData.split(SearchStr3)[1] : CSVData.split(SearchStr3)[0];
 
@@ -85,20 +86,24 @@ for (i = itemLimit * getPage; i < splitcsv.length; ++i)
     }
     pagedata.push(info);
     //Uncomment to make file.
-    fs.writeFile("Output Page "+page+" - Records From "+count+" To "+i +".json", JSON.stringify(pagedata), function (err) {
-      if (err) throw err;
-      console.log('File is created successfully.');
-    });
+    // fs.writeFile("Output Page "+page+" - Records From "+count+" To "+i +".json", JSON.stringify(pagedata), function (err) {
+    //   if (err) throw err;
+    //   console.log('File is created successfully.');
+    // });
     //console.log(JSON.stringify(pagedata));
     ++page;
     count = i+1;
     
     //Set the length to zero because we need to clear the array for more data.
-    pagedata.length = 0;
+    //pagedata.length = 0;
     //We can use the variable i to stop execution of the loop. We can do this by setting it to the size of the splitcsv, and this will mean once it creates a page, it will no longer run.
     i = splitcsv.length;
   }
 }
+console.log("Account Number: " + AccountNo);
+console.log("Page: " + Page);
+return pagedata;
 }
 
-ExampleParse();
+//ExampleParse();
+module.exports = { ExampleParse };

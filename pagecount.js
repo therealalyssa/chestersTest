@@ -36,10 +36,11 @@ CSVData = CSVData.split(SearchStr4)[0].trim();
 
 //let testjson = await CSVData.csvToJson()
 //console.log(CSVData);
-bufferCSV = Buffer.from(CSVData, "base64").toString("utf-8");
+  let bufferCSV = Buffer.from(CSVData, "base64").toString("utf-8");
 //We have also put the \n into this so that it does not show up when we stringify it later.
-splitcsv = bufferCSV.split('\r\n');
+  let splitcsv = bufferCSV.split('\r\n');
 console.log(Math.ceil(splitcsv.length/itemLimit));
+console.log("Records in the dataset: " + splitcsv.length);
 // let loopElement=[];
 // for (let a = 0; a  < splitcsv; ++a)
 // {
@@ -48,5 +49,5 @@ console.log(Math.ceil(splitcsv.length/itemLimit));
 return Math.ceil(splitcsv.length/itemLimit);
 }
 
-// PageCount();
+ //PageCount();
 module.exports = { PageCount };

@@ -51,7 +51,8 @@ splitcsv = bufferCSV.split('\r\n');
 //count stores the amount of records that have been processed.
 let count = itemLimit * getPage;
 let page = getPage;
-let pagedata = [[],[]];
+let pagedata;
+let senddata =[];
 for (i = itemLimit * getPage; i < splitcsv.length; ++i)
 {
   //thiscsv should be 5 separate values, we will need to map these.
@@ -69,41 +70,45 @@ for (i = itemLimit * getPage; i < splitcsv.length; ++i)
       Margin:marginValue,
       Mark_Up:markupValue,    
   };
-  pagedata[0].push(item);
+  senddata.push(item);
   //console.log(JSON.stringify(item));
   //Max limit for one page to zoho
   //We also need to send the request page if its the last one, even if its not 1000 records.
-  if(pagedata[0].length >= itemLimit || (i == splitcsv.length-1))
-  {
-    let info = {
-      pageNo: page,
-      AdditionalData: true,
-      AccountNo: FileAccountNo
-    } 
-    if((i == splitcsv.length-1) == true)
+    if (senddata.length >= itemLimit || (i == splitcsv.length - 1))
     {
-      info.AdditionalData = false;
+        let info = {
+            pageNo: page,
+            AdditionalData: true,
+            //AccountNo: FileAccountNo,
+            AccountNo: AccountNo,
+            Data: senddata
+        }
+        if ((i == splitcsv.length - 1) == true) {
+            info.AdditionalData = false;
+        }
+        pagedata = info;
+        //pagedata.push(info);
+        //pagedata[1].push(info);
+        //Uncomment to make file.
+        // fs.writeFile("Output Page "+page+" - Records From "+count+" To "+i +".json", JSON.stringify(pagedata), function (err) {
+        //   if (err) throw err;
+        //   console.log('File is created successfully.');
+        // });
+        //console.log(JSON.stringify(pagedata));
+        ++page;
+        count = i + 1;
+
+        //Set the length to zero because we need to clear the array for more data.
+        //pagedata.length = 0;
+        //We can use the variable i to stop execution of the loop. We can do this by setting it to the size of the splitcsv, and this will mean once it creates a page, it will no longer run.
+        i = splitcsv.length;
     }
-    pagedata[1].push(info);
-    //Uncomment to make file.
-    // fs.writeFile("Output Page "+page+" - Records From "+count+" To "+i +".json", JSON.stringify(pagedata), function (err) {
-    //   if (err) throw err;
-    //   console.log('File is created successfully.');
-    // });
-    //console.log(JSON.stringify(pagedata));
-    ++page;
-    count = i+1;
-    
-    //Set the length to zero because we need to clear the array for more data.
-    //pagedata.length = 0;
-    //We can use the variable i to stop execution of the loop. We can do this by setting it to the size of the splitcsv, and this will mean once it creates a page, it will no longer run.
-    i = splitcsv.length;
-  }
 }
 console.log("Account Number: " + AccountNo);
 console.log("Page: " + Page);
+console.log("Pagedata: " + JSON.stringify(pagedata));
 return pagedata;
 }
 
-ExampleParse(1,1);
-//module.exports = { ExampleParse };
+//ExampleParse(1,25);
+module.exports = { ExampleParse };

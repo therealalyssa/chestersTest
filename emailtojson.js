@@ -51,7 +51,7 @@ splitcsv = bufferCSV.split('\r\n');
 //count stores the amount of records that have been processed.
 let count = itemLimit * getPage;
 let page = getPage;
-let pagedata = [];
+let pagedata = [[],[]];
 for (i = itemLimit * getPage; i < splitcsv.length; ++i)
 {
   //thiscsv should be 5 separate values, we will need to map these.
@@ -69,11 +69,11 @@ for (i = itemLimit * getPage; i < splitcsv.length; ++i)
       Margin:marginValue,
       Mark_Up:markupValue,    
   };
-  pagedata.push(item);
+  pagedata[0].push(item);
   //console.log(JSON.stringify(item));
   //Max limit for one page to zoho
   //We also need to send the request page if its the last one, even if its not 1000 records.
-  if(pagedata.length >= itemLimit || (i == splitcsv.length-1))
+  if(pagedata[0].length >= itemLimit || (i == splitcsv.length-1))
   {
     let info = {
       pageNo: page,
@@ -84,7 +84,7 @@ for (i = itemLimit * getPage; i < splitcsv.length; ++i)
     {
       info.AdditionalData = false;
     }
-    pagedata.push(info);
+    pagedata[1].push(info);
     //Uncomment to make file.
     // fs.writeFile("Output Page "+page+" - Records From "+count+" To "+i +".json", JSON.stringify(pagedata), function (err) {
     //   if (err) throw err;
@@ -105,5 +105,5 @@ console.log("Page: " + Page);
 return pagedata;
 }
 
-//ExampleParse();
-module.exports = { ExampleParse };
+ExampleParse(1,1);
+//module.exports = { ExampleParse };

@@ -1,6 +1,6 @@
 require("dotenv").config();
-const { PageCount } = require('./pagecount.js');
-const { ExampleParse } = require('./emailtojson.js');
+const {PageCount} = require('./pagecount.js');
+const {ExampleParse} = require('./emailtojson.js');
 const express = require('express');
 const multer = require("multer");
 const moment = require("moment-timezone");
@@ -10,140 +10,133 @@ const app = express();
 const UTIL = require("util");
 const fs = require("fs");
 const csvtojson = require('csvtojson');
-const Zoho  = require('./zohospec.js');
+const Zoho = require('./zohospec.js');
 
 //const options = false;
 
 
 app.use(bodyParser.json());
 require("dotenv").config();
-let testvar2 = "Chesters Data will display here2";
 
-app.use(express.json({ limit: "80mb"}));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({limit: "80mb"}));
+app.use(express.urlencoded({extended: true}));
 
 //This will need to have the pricebook / account number in order to get the pricebook to work.
 app.get('/pricebook/getPageCount', async (req, res) => {
     try {
         let pageCount;
-       //let AccountNo = req.get('accountno');
-       let AccountNo = req.query.AccountNo;
-       if(AccountNo !== undefined)
-       {
-        //Send the request.
-        pageCount = await PageCount();
-        res.json({ pageCount, message: 'Success! There are '+pageCount +' pages. The account number is: '+AccountNo });
-       }
-       else
-       {
-        //Not really necessary, just used for the error. We could throw some info instead.
-        res.status(500).json({error: 'No Account Number provided.'});
-       }
-      
+        //let AccountNo = req.get('accountno');
+        let AccountNo = req.query.AccountNo;
+        if (AccountNo !== undefined) {
+            //Send the request.
+            pageCount = await PageCount();
+            res.json({
+                pageCount,
+                message: 'Success! There are ' + pageCount + ' pages. The account number is: ' + AccountNo
+            });
+        } else {
+            //Not really necessary, just used for the error. We could throw some info instead.
+            res.status(500).json({error: 'No Account Number provided.'});
+        }
+
     } catch (error) {
-      console.error(error);
-       console.log(req);
-      res.status(500).json({ error: 'There was an error parsing data' });
-      console.log('There was an error parsing data');
+        console.error(error);
+        console.log(req);
+        res.status(500).json({error: 'There was an error parsing data'});
+        console.log('There was an error parsing data');
     }
 });
 
 //This will need to have the account number / pricebook number, as well as the required page.
 app.get('/pricebook/getPage', async (req, res) => {
     try {
-       AccountNo = req.query.AccountNo;
-       Page = req.query.Page;
-       let jsonData;
-       if(AccountNo !== undefined && Page !== undefined)
-       {
-        //Send the request.
-        jsonData = await ExampleParse(AccountNo, Page);
-        res.json(jsonData);
-       }
-       else
-       {
-        //Not really necessary, just used for the error. We could throw some info instead.
-        res.status(500).json({error: 'No Account Number or Page Provided.'});
-       }
-       //res.json({ jsonData, message: 'Success!' });
+        let AccountNo = req.query.AccountNo;
+        let Page = req.query.Page;
+        let jsonData;
+        if (AccountNo !== undefined && Page !== undefined) {
+            //Send the request.
+            jsonData = await ExampleParse(AccountNo, Page);
+            res.json(jsonData);
+        } else {
+            //Not really necessary, just used for the error. We could throw some info instead.
+            res.status(500).json({error: 'No Account Number or Page Provided.'});
+        }
+        //res.json({ jsonData, message: 'Success!' });
     } catch (error) {
-      console.error(error);
-       //console.log(req);
-      res.status(500).json({ error: 'There was an error parsing data' });
-      console.log('There was an error parsing data');
+        console.error(error);
+        //console.log(req);
+        res.status(500).json({error: 'There was an error parsing data'});
+        console.log('There was an error parsing data');
     }
 });
-
 
 
 app.post('/chestersData', multer({
-    limits: { fieldSize: 25 * 1024 * 1024 },
+    limits: {fieldSize: 25 * 1024 * 1024},
     storage: multer.diskStorage({
-    destination: (req, file, SetDest) => {
-        SetDest(null, PATH.resolve("./"));
-        console.log('test');
-    },
-    filename: (req, file, SetFileName) => {
-        SetFileName(null, "ChestersData_" + moment().tz("Pacific/Auckland").format("YYYYMMDDHHmmss") + ".csv");
+        destination: (req, file, SetDest) => {
+            SetDest(null, PATH.resolve("./"));
+            console.log('test');
+        },
+        filename: (req, file, SetFileName) => {
+            SetFileName(null, "ChestersData_" + moment().tz("Pacific/Auckland").format("YYYYMMDDHHmmss") + ".csv");
+        }
+    })
+}).any(), async (req, res, next) => {
+    try {
+        //const writeFile = UTIL.promisify(fs.writeFile);
+        const readFile = UTIL.promisify(fs.readFile);
+
+        // await WriteFile(PATH.resolve("response.json"), req.body.email.split(`Content-ID: <35905C69D152B245B3694C9B0A0293C5@AUSP282.PROD.OUTLOOK.COM>
+        // Content-Transfer-Encoding: base64`)[1]);
+
+        // Use split() to split the response into an array
+        //const responseArray = req.body.email.toString().split('ARC-Seal: ');
+
+        // Log the responseArray to the console
+        //var test = Buffer.from(responseArray[1], "base64").toString("ascii");
+        //console.log(UTIL.inspect("This is the responseArray", responseArray, { maxStringLength: 3000 }));
+        //console.log("This is a test for the base64 thing.");
+        //console.log(test);
+
+        // Write the responseArray to a file
+        //await writeFile('./testfile.txt', "Hello");
+        //await writeFile('./response.csv', Buffer.from(responseArray[1], "base64").toString("ascii"));
+
+        //Read the file
+        // const fileContent= await (function() {
+        //     return new Promise((resolve, reject) => {
+        //         fs.readFile("./response.csv", (err, fileContent) => {
+        //             if (err)
+        //             {
+        //                 reject("Error reading the file");
+        //                 return;
+        //             }
+
+        //             resolve(fileContent);
+        //             return;
+        //         });
+        //     });
+        // })();
+
+        // //Logging the read file
+        // console.log("Display it!", UTIL.inspect(fileContent.toString(), { maxStringLength: 200 }));
+
+        res.status(200).send("OK");
+
+    } catch (error) {
+        console.log(error);
+        res.status(200).send("Problem");
+
     }
-})}).any(), async (req, res, next) => {
-try 
-{
-    //const writeFile = UTIL.promisify(fs.writeFile);
-    const readFile=UTIL.promisify(fs.readFile);
-   
-    // await WriteFile(PATH.resolve("response.json"), req.body.email.split(`Content-ID: <35905C69D152B245B3694C9B0A0293C5@AUSP282.PROD.OUTLOOK.COM>
-    // Content-Transfer-Encoding: base64`)[1]);
-
-    // Use split() to split the response into an array
-    //const responseArray = req.body.email.toString().split('ARC-Seal: ');
-
-    // Log the responseArray to the console
-    //var test = Buffer.from(responseArray[1], "base64").toString("ascii");
-    //console.log(UTIL.inspect("This is the responseArray", responseArray, { maxStringLength: 3000 }));
-    //console.log("This is a test for the base64 thing.");
-    //console.log(test);
-
-    // Write the responseArray to a file
-    //await writeFile('./testfile.txt', "Hello");
-    //await writeFile('./response.csv', Buffer.from(responseArray[1], "base64").toString("ascii"));
-    
-    //Read the file
-    // const fileContent= await (function() {
-    //     return new Promise((resolve, reject) => {
-    //         fs.readFile("./response.csv", (err, fileContent) => {
-    //             if (err)
-    //             {
-    //                 reject("Error reading the file");
-    //                 return;
-    //             }
-
-    //             resolve(fileContent);
-    //             return;
-    //         });
-    //     });
-    // })();
-
-    // //Logging the read file
-    // console.log("Display it!", UTIL.inspect(fileContent.toString(), { maxStringLength: 200 }));
-
-    res.status(200).send("OK");
-    return;
-}
-catch (error)
-{
-    console.log(error);
-    res.status(200).send("Problem");
-    return;
-}
 });
 
-const { count } = require('console');
+const {count} = require('console');
 
 app.listen(process.env.PORT, async () => {
     const readFile = UTIL.promisify(fs.readFile);
     console.log(`Our app is running on port ${process.env.PORT}`);
-  
+
     /*let FileContent = await readFile(PATH.resolve("./response.txt"));
     // let FileParts = FileContent.toString().split(`Content-ID: <35905C69D152B245B3694C9B0A0293C5@AUSP282.PROD.OUTLOOK.COM>\nContent-Transfer-Encoding: base64`);
     let FileParts = FileContent.toString().split(`Content-Disposition: attachment;\n\tfilename="Chesters_CSV`);
@@ -164,7 +157,7 @@ app.listen(process.env.PORT, async () => {
 
     console.log("Records in output.json = " + JSON.parse(await readFile(PATH.resolve("./output.json"))).length);
 
-  });
+});
 
 // app.listen(process.env.PORT, async () => {
 //     const readFile=UTIL.promisify(fs.readFile);
@@ -177,29 +170,23 @@ app.listen(process.env.PORT, async () => {
 // let jsonData = JSON.parse(decodedContent.replace(/\\u0023/g, '#'));
 // console.log(jsonData);
 
-   
 
-    // console.log(UTIL.inspect(Buffer.from(FileParts[1], "base64").toString("ascii"), { maxStringLength: 1000 }));
-  
+// console.log(UTIL.inspect(Buffer.from(FileParts[1], "base64").toString("ascii"), { maxStringLength: 1000 }));
+
 // });
 
-function WriteFile(path, data)
-    {
-        return new Promise((resolve, reject) => 
-        {   
-            fs.writeFile(path, data, (err) =>
-            {
-                if (err)
-                {
-                    reject(err);
-                    return;
-                }
-                
-                resolve("File Written to " + path);
+function WriteFile(path, data) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(path, data, (err) => {
+            if (err) {
+                reject(err);
                 return;
-            });
-        }).catch((error) => 
-        {
-            console.log(error);
+            }
+
+            resolve("File Written to " + path);
+
         });
+    }).catch((error) => {
+        console.log(error);
+    });
 }

@@ -1,6 +1,7 @@
 require("dotenv").config();
-const {PageCount} = require('./pagecount.js');
-const {ExampleParse} = require('./emailtojson.js');
+const {Getpagecount} = require('./getpagecount.js');
+const {Getpage} = require("./getpage.js");
+const {EmailToJson} = require('./emailtojson.js');
 const express = require('express');
 const multer = require("multer");
 const moment = require("moment-timezone");
@@ -21,15 +22,32 @@ require("dotenv").config();
 app.use(express.json({limit: "80mb"}));
 app.use(express.urlencoded({extended: true}));
 
+
+//Shivneel Rattan 10-5-2023 **HOME** This is the url that needs to be called in order for the emails to be created into json files. This is the endpoint that the email uses in order to ADD and UPDATE a pricebook.
+app.get('/pricebook/updatePricebook', async (req, res) => {
+    try
+    {
+        let emailResponse = await EmailToJson;
+        res.json({
+            message: 'Success! The email has been decoded and added into the pricebook list.',
+        });
+    }
+    catch (error)
+    {
+        res.status(500).json({error: 'Email not updating.'});
+    }
+});
+
+
 //This will need to have the pricebook / account number in order to get the pricebook to work.
 app.get('/pricebook/getPageCount', async (req, res) => {
     try {
-        let pageCount;
+        //let pageCount;
         //let AccountNo = req.get('accountno');
         let AccountNo = req.query.AccountNo;
         if (AccountNo !== undefined) {
             //Send the request.
-            pageCount = await PageCount();
+            let pageCount = await Getpagecount(AccountNo);
             res.json({
                 pageCount,
                 message: 'Success! There are ' + pageCount + ' pages. The account number is: ' + AccountNo
@@ -55,7 +73,7 @@ app.get('/pricebook/getPage', async (req, res) => {
         let jsonData;
         if (AccountNo !== undefined && Page !== undefined) {
             //Send the request.
-            jsonData = await ExampleParse(AccountNo, Page);
+            jsonData = await Getpage(AccountNo, Page);
             res.json(jsonData);
         } else {
             //Not really necessary, just used for the error. We could throw some info instead.
@@ -69,6 +87,7 @@ app.get('/pricebook/getPage', async (req, res) => {
         console.log('There was an error parsing data');
     }
 });
+
 
 
 app.post('/chestersData', multer({
@@ -132,6 +151,7 @@ app.post('/chestersData', multer({
 });
 
 const {count} = require('console');
+
 
 app.listen(process.env.PORT, async () => {
     const readFile = UTIL.promisify(fs.readFile);

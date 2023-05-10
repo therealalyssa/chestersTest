@@ -1,7 +1,8 @@
-//const UTIL = require("util");
+/*
+const UTIL = require("util");
 const fs = require("fs");
 const fsextra = require("fs-extra");
-//const ReadFile = UTIL.promisify(fs.readFile);
+const ReadFile = UTIL.promisify(fs.readFile);
 
 const itemLimit = 1000;
 
@@ -10,10 +11,9 @@ require.extensions['.txt'] = function (module, filename) {
 };
 
 let email = require("./response.txt");
-//const {json} = require("express");
+const {json} = require("express");
 
-//Shivneel Rattan 10-5-2023 **HOME** This function is designed to turn an email into a json file with data. It stores the data in Output
-async function EmailToJson() {
+async function ExampleParse(AccountNo, Page) {
 //let Base64Str = await ReadFile("./response.txt");
     let Base64Str = email;//await ReadFile("./response.txt");
 
@@ -26,6 +26,8 @@ async function EmailToJson() {
     const SearchStr4 = "\n--";
 
 //Change this variable to get data from a specific page.
+//let getPage = 1;
+    let getPage = Page;
 
     let CSVData = Base64Str.split(SearchStr1).length > 1 ? Base64Str.split(SearchStr1)[1] : Base64Str.split(SearchStr1)[0];
 
@@ -49,11 +51,13 @@ async function EmailToJson() {
 //We have also put the \n into this so that it does not show up when we stringify it later.
     splitcsv = bufferCSV.split('\r\n');
 //count stores the amount of records that have been processed.
-    let count = 0;
+    let count = itemLimit * getPage;
+    let page = getPage;
+    let pagedata;
     let senddata = [];
-    //let pagedata;
-    let page = 0;
-    for (let i = 0; i < splitcsv.length; ++i) {
+    let recordcount = 0;
+    for (i = itemLimit * getPage; i < splitcsv.length; ++i) {
+        ++recordcount;
         //thiscsv should be 5 separate values, we will need to map these.
         thiscsv = splitcsv[i].split(",");
         //thiscsv[3] is decimal 1, thiscsv[4] is decimal 2
@@ -84,17 +88,22 @@ async function EmailToJson() {
         //Max limit for one page to zoho
         //We also need to send the request page if its the last one, even if its not 1000 records.
         if (senddata.length >= itemLimit || (i == splitcsv.length - 1)) {
-            let pagedata = {
+            let info = {
+                recordCount: recordcount,
                 pageNo: page,
                 AdditionalData: true,
-                AccountNo: FileAccountNo,
+                //AccountNo: FileAccountNo,
+                AccountNo: AccountNo,
                 Data: senddata
             }
             if ((i == splitcsv.length - 1) == true) {
-                pagedata.AdditionalData = false;
+                info.AdditionalData = false;
             }
+            pagedata = info;
+            //pagedata.push(info);
+            //pagedata[1].push(info);
             //Uncomment to make file.
-            fsextra.outputFile("Output/Account No - " + FileAccountNo + " - Output Page " + page + " - Records From " + count + " To " + i + ".json", JSON.stringify(pagedata), function (err) {
+            fsextra.outputFile("Output/Account No - " + AccountNo + " - Output Page " + page + " - Records From " + count + " To " + i + ".json", JSON.stringify(pagedata), function (err) {
                 if (err) throw err;
                 console.log('File is created successfully.');
             });
@@ -103,11 +112,17 @@ async function EmailToJson() {
             count = i + 1;
 
             //Set the length to zero because we need to clear the array for more data.
-            senddata.length = 0;
-            pagedata.length = 0;
+            //pagedata.length = 0;
+            //We can use the variable i to stop execution of the loop. We can do this by setting it to the size of the splitcsv, and this will mean once it creates a page, it will no longer run.
+            i = splitcsv.length;
         }
     }
+    console.log("Account Number: " + AccountNo);
+    console.log("Page: " + Page);
+//console.log("Pagedata: " + JSON.stringify(pagedata));
+    console.log("Record Count: " + recordcount);
+    return pagedata;
 }
 
-//EmailToJson();
-module.exports = {EmailToJson};
+//ExampleParse(1,25);
+module.exports = {ExampleParse};*/

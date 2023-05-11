@@ -74,7 +74,7 @@ app.get('/pricebook/getPage', async (req, res) => {
     try {
         let AccountNo = req.query.AccountNo;
         let Page = req.query.Page;
-        console.log("Input Data, Accont No: "+ AccountNo +" Page No: " +Page);
+        console.log("Input Data, Account No: "+ AccountNo +" Page No: " +Page);
         let jsonData;
         if (AccountNo !== undefined && Page !== undefined) {
             //Send the request.

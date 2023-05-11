@@ -1,5 +1,6 @@
 //const UTIL = require("util");
 const fs = require("fs");
+const path = require("path");
 //const fsextra = require("fs-extra");
 //const ReadFile = UTIL.promisify(fs.readFile);
 
@@ -9,10 +10,12 @@ require.extensions['.txt'] = function (module, filename) {
 };
 
 async function Getpage(AccountNo, Page) {
-    let Directory = "./Output/";
+    //let Directory = "./Output/";
+    let filePath = path.resolve("Output", "Account No - " + AccountNo + " - Output Page " + Page + ".json");
     return new Promise((resolve, reject) => {
         //Shivneel Rattan 10-5--2023 **HOME** We need to check if the string contains the account in a specific format
-        fs.readFile(Directory + "Account No - " + AccountNo + " - Output Page " + Page + ".json", 'utf8', (err, data) => {
+        //fs.readFile(Directory + "Account No - " + AccountNo + " - Output Page " + Page + ".json", 'utf8', (err, data) => {
+        fs.readFile(filePath, 'utf8', (err, data) => {
             if (err) {
                 console.error("Error " + err);
                 //return reject(err);

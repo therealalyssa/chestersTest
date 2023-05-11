@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 
 require.extensions['.txt'] = function (module, filename) {
     module.exports = fs.readFileSync(filename, 'utf8');
@@ -9,7 +10,8 @@ require.extensions['.txt'] = function (module, filename) {
 //Shivneel Rattan 10-5-2023 **HOME** This function gets the COUNT of pages in the Output directory matching the account number.
 async function Getpagecount(AccountNo) {
     //AccountNo = "TEST1234";
-    let Directory = "Output";
+    //let Directory = "Output";
+    let Directory = path.resolve("Output");
     let pagecount = 0;
     return new Promise((resolve, reject) => {
         //An important thing about fs is that it does not return a promise. as such, we need to be able to wrap this up in a promise in order for the data to be sent correctly.

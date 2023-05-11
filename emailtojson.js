@@ -10,6 +10,7 @@ require.extensions['.txt'] = function (module, filename) {
 };
 
 let email = require("./response.txt");
+const path = require("path");
 //const {json} = require("express");
 
 //Shivneel Rattan 10-5-2023 **HOME** This function is designed to turn an email into a json file with data. It stores the data in Output
@@ -91,7 +92,8 @@ async function EmailToJson() {
                 pagedata.AdditionalData = false;
             }
             //Uncomment to make file.
-            fsextra.outputFile("Output/Account No - " + FileAccountNo + " - Output Page " + page + ".json", JSON.stringify(pagedata), function (err) {
+            let saveFile = path.resolve("Output", "Account No - " + FileAccountNo + " - Output Page " + page + ".json");
+            fsextra.outputFile(saveFile, JSON.stringify(pagedata), function (err) {
                 if (err) throw err;
                 console.log('File is created successfully.');
             });

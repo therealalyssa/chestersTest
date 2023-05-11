@@ -10,11 +10,10 @@ const bodyParser = require('body-parser');
 const app = express();
 const UTIL = require("util");
 const fs = require("fs");
-const csvtojson = require('csvtojson');
-const Zoho = require('./zohospec.js');
+//const csvtojson = require('csvtojson');
+//const Zoho = require('./zohospec.js');
 
 //const options = false;
-
 
 app.use(bodyParser.json());
 require("dotenv").config();
@@ -22,12 +21,11 @@ require("dotenv").config();
 app.use(express.json({limit: "80mb"}));
 app.use(express.urlencoded({extended: true}));
 
-
 //Shivneel Rattan 10-5-2023 **HOME** This is the url that needs to be called in order for the emails to be created into json files. This is the endpoint that the email uses in order to ADD and UPDATE a pricebook.
 app.get('/pricebook/updatePricebook', async (req, res) => {
     try
     {
-        let emailResponse = await EmailToJson;
+        let emailResponse = await EmailToJson();
         res.json({
             message: 'Success! The email has been decoded and added into the pricebook list.',
         });
@@ -38,25 +36,31 @@ app.get('/pricebook/updatePricebook', async (req, res) => {
     }
 });
 
-
 //This will need to have the pricebook / account number in order to get the pricebook to work.
 app.get('/pricebook/getPageCount', async (req, res) => {
     try {
         //let pageCount;
         //let AccountNo = req.get('accountno');
         let AccountNo = req.query.AccountNo;
+        //console.log(AccountNo);
         if (AccountNo !== undefined) {
             //Send the request.
             let pageCount = await Getpagecount(AccountNo);
-            res.json({
-                pageCount,
-                message: 'Success! There are ' + pageCount + ' pages. The account number is: ' + AccountNo
-            });
+            //console.log("This is after awaiting data: " + pageCount);
+            if (pageCount !== undefined && pageCount != 0) {
+                res.json({
+                    pageCount,
+                    message: 'Success! There are ' + pageCount + ' pages. The account number is: ' + AccountNo
+                });
+            } else {
+                res.json({
+                    message: "There are no records matching the Account Number."
+                });
+            }
         } else {
             //Not really necessary, just used for the error. We could throw some info instead.
             res.status(500).json({error: 'No Account Number provided.'});
         }
-
     } catch (error) {
         console.error(error);
         console.log(req);
@@ -70,11 +74,22 @@ app.get('/pricebook/getPage', async (req, res) => {
     try {
         let AccountNo = req.query.AccountNo;
         let Page = req.query.Page;
+        console.log("Input Data, Accont No: "+ AccountNo +" Page No: " +Page);
         let jsonData;
         if (AccountNo !== undefined && Page !== undefined) {
             //Send the request.
             jsonData = await Getpage(AccountNo, Page);
-            res.json(jsonData);
+            //console.log("This is JSONDATA: " +jsonData);
+            if(jsonData === undefined)
+            {
+                res.json({message: "Page Not Found."});
+            }
+            else
+            {
+                res.json([jsonData]);
+                //res.sendFile(jsonData);
+            }
+            //console.log(jsonData);
         } else {
             //Not really necessary, just used for the error. We could throw some info instead.
             res.status(500).json({error: 'No Account Number or Page Provided.'});
@@ -87,8 +102,6 @@ app.get('/pricebook/getPage', async (req, res) => {
         console.log('There was an error parsing data');
     }
 });
-
-
 
 app.post('/chestersData', multer({
     limits: {fieldSize: 25 * 1024 * 1024},
@@ -140,18 +153,14 @@ app.post('/chestersData', multer({
 
         // //Logging the read file
         // console.log("Display it!", UTIL.inspect(fileContent.toString(), { maxStringLength: 200 }));
-
         res.status(200).send("OK");
-
     } catch (error) {
         console.log(error);
         res.status(200).send("Problem");
-
     }
 });
 
 const {count} = require('console');
-
 
 app.listen(process.env.PORT, async () => {
     const readFile = UTIL.promisify(fs.readFile);
@@ -202,9 +211,7 @@ function WriteFile(path, data) {
                 reject(err);
                 return;
             }
-
             resolve("File Written to " + path);
-
         });
     }).catch((error) => {
         console.log(error);

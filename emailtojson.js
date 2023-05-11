@@ -25,8 +25,6 @@ async function EmailToJson() {
 
     const SearchStr4 = "\n--";
 
-//Change this variable to get data from a specific page.
-
     let CSVData = Base64Str.split(SearchStr1).length > 1 ? Base64Str.split(SearchStr1)[1] : Base64Str.split(SearchStr1)[0];
 
     let FileName = SearchStr1.split('filename="')[1] + CSVData.split(SearchStr2)[0] + ".csv";
@@ -41,8 +39,7 @@ async function EmailToJson() {
 
     CSVData = CSVData.split(SearchStr4)[0].trim();
 
-//let testjson = await CSVData.csvToJson()
-//console.log(CSVData);
+
     bufferCSV = Buffer.from(CSVData, "base64").toString("utf-8");
 //csvJson = bufferCSV.toString();
     csvJson = JSON.stringify(bufferCSV);
@@ -94,7 +91,7 @@ async function EmailToJson() {
                 pagedata.AdditionalData = false;
             }
             //Uncomment to make file.
-            fsextra.outputFile("Output/Account No - " + FileAccountNo + " - Output Page " + page + " - Records From " + count + " To " + i + ".json", JSON.stringify(pagedata), function (err) {
+            fsextra.outputFile("Output/Account No - " + FileAccountNo + " - Output Page " + page + ".json", JSON.stringify(pagedata), function (err) {
                 if (err) throw err;
                 console.log('File is created successfully.');
             });
